@@ -1,0 +1,9 @@
+<changelist name="Uncommitted_changes_before_Update_at_2021_7_1_16_28_[Default]1" date="1625128160511" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2021_7_1_16_28_[Default]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 2021/7/1 16:28 [Default]" />
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/cn/wmyskxz/controller/StudentController.class" />
+    <option name="AFTER_PATH" value="target/classes/cn/wmyskxz/controller/StudentController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2021_7_1_16_28_[Default]1/StudentController.class" />
+  </binary>
+</changelist>

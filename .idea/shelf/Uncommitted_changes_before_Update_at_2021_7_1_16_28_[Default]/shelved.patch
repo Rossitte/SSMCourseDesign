@@ -1,0 +1,91 @@
+Index: src/main/java/cn/wmyskxz/controller/StudentController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cn.wmyskxz.controller;\r\n\r\nimport cn.wmyskxz.entity.Student;\r\nimport cn.wmyskxz.entity.User;\r\nimport cn.wmyskxz.service.StudentService;\r\nimport cn.wmyskxz.util.Page;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.stereotype.Controller;\r\nimport org.springframework.ui.Model;\r\nimport org.springframework.web.bind.annotation.RequestMapping;\r\nimport org.springframework.web.servlet.ModelAndView;\r\nimport sun.misc.Request;\r\n\r\nimport javax.servlet.http.HttpServletRequest;\r\nimport javax.servlet.http.HttpServletResponse;\r\nimport javax.sql.RowSet;\r\nimport java.text.ParseException;\r\nimport java.text.SimpleDateFormat;\r\nimport java.util.Date;\r\nimport java.util.List;\r\n\r\n@Controller\r\n@RequestMapping(\"\")\r\npublic class StudentController {\r\n\r\n    @Autowired\r\n    private StudentService studentService;\r\n\r\n\r\n   @RequestMapping(\"/index\")\r\n    public String tolistStudent(HttpServletRequest request){\r\n\r\n       User user=new User();\r\n\r\n       String  username = request.getParameter(\"Username\");\r\n       String  password = request.getParameter(\"Password\");\r\n       System.out.println(username);\r\n       System.out.println(password);\r\n       if (username != null && username.equals(\"tony\")\r\n                    && password != null &&  password.equals(\"123\")){\r\n                return \"/views/listStudent\";\r\n            }\r\n\r\n       return \"null\";\r\n    }\r\n\r\n    @RequestMapping(\"/findStudent\")\r\n    public  String toFindStudent(HttpServletRequest request, HttpServletResponse response){\r\n\r\n        return \"/views/findStudent\";\r\n    }\r\n\r\n    @RequestMapping(\"/seekStudent\")\r\n    public ModelAndView toseekStudent(HttpServletRequest request) {\r\n        ModelAndView mav = new ModelAndView(\"/views/resultStudent\");\r\n\r\n        int student_id = Integer.parseInt(request.getParameter(\"student_id\"));\r\n        System.out.println(student_id);\r\n        Student student = studentService.findStudent(student_id);\r\n        System.out.println(student);\r\n        mav.addObject(\"student\", student);\r\n        return mav;\r\n    }\r\n\r\n\r\n\r\n    @RequestMapping(\"/StudentList\")\r\n        public String toStudentList(HttpServletRequest request, HttpServletResponse response) {\r\n\r\n            // 获取分页参数\r\n            int start = 0;\r\n            int count = 10;\r\n\r\n            try {\r\n                start = Integer.parseInt(request.getParameter(\"page.start\"));\r\n                count = Integer.parseInt(request.getParameter(\"page.count\"));\r\n            } catch (Exception e) {\r\n            }\r\n\r\n            Page page = new Page(start, count);\r\n\r\n            List<Student> students = studentService.list(page.getStart(), page.getCount());\r\n            int total = studentService.getTotal();\r\n            page.setTotal(total);\r\n\r\n            request.setAttribute(\"students\", students);\r\n            request.setAttribute(\"page\", page);\r\n\r\n        return \"/views/StudentList\";\r\n    }\r\n\r\n    @RequestMapping(\"/addStudent\")\r\n    public String addStudent(HttpServletRequest request, HttpServletResponse response) {\r\n\r\n        Student student = new Student();\r\n\r\n        int studentID = Integer.parseInt(request.getParameter(\"student_id\"));\r\n        String name = request.getParameter(\"name\");\r\n        int age = Integer.parseInt(request.getParameter(\"age\"));\r\n        String sex = request.getParameter(\"sex\");\r\n        Date birthday = null;\r\n        // String 类型按照 yyyy-MM-dd 的格式转换为 java.util.Date 类\r\n        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(\"yyyy-MM-dd\");\r\n        try {\r\n            birthday = simpleDateFormat.parse(request.getParameter(\"birthday\"));\r\n        } catch (ParseException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n        student.setStudent_id(studentID);\r\n        student.setName(name);\r\n        student.setAge(age);\r\n        student.setSex(sex);\r\n        student.setBirthday(birthday);\r\n\r\n        studentService.addStudent(student);\r\n\r\n        return \"/views/listStudent\";\r\n    }\r\n\r\n    @RequestMapping(\"/listStudent\")\r\n    public String listStudent(HttpServletRequest request, HttpServletResponse response) {\r\n\r\n        // 获取分页参数\r\n        int start = 0;\r\n        int count = 10;\r\n\r\n        try {\r\n            start = Integer.parseInt(request.getParameter(\"page.start\"));\r\n            count = Integer.parseInt(request.getParameter(\"page.count\"));\r\n        } catch (Exception e) {\r\n        }\r\n\r\n        Page page = new Page(start, count);\r\n\r\n        List<Student> students = studentService.list(page.getStart(), page.getCount());\r\n        int total = studentService.getTotal();\r\n        page.setTotal(total);\r\n\r\n        request.setAttribute(\"students\", students);\r\n        request.setAttribute(\"page\", page);\r\n\r\n        return \"/views/listStudent\";\r\n    }\r\n\r\n    @RequestMapping(\"/deleteStudent\")\r\n    public String deleteStudent(int id) {\r\n        studentService.deleteStudent(id);\r\n        return \"/views/listStudent\";\r\n    }\r\n\r\n    @RequestMapping(\"/editStudent\")\r\n    public ModelAndView editStudent(int id) {\r\n        ModelAndView mav = new ModelAndView(\"/views/editStudent\");\r\n        Student student = studentService.getStudent(id);\r\n        mav.addObject(\"student\", student);\r\n        return mav;\r\n    }\r\n\r\n    @RequestMapping(\"/updateStudent\")\r\n    public String updateStudent(HttpServletRequest request, HttpServletResponse response) {\r\n\r\n        Student student = new Student();\r\n\r\n        int id = Integer.parseInt(request.getParameter(\"id\"));\r\n        int student_id = Integer.parseInt(request.getParameter(\"student_id\"));\r\n        String name = request.getParameter(\"name\");\r\n        int age = Integer.parseInt(request.getParameter(\"age\"));\r\n        String sex = request.getParameter(\"sex\");\r\n\r\n        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(\"yyyy-MM-dd\");\r\n        Date birthday = null;\r\n        try {\r\n            birthday = simpleDateFormat.parse(request.getParameter(\"birthday\"));\r\n        } catch (ParseException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n        student.setId(id);\r\n        student.setStudent_id(student_id);\r\n        student.setName(name);\r\n        student.setAge(age);\r\n        student.setSex(sex);\r\n        student.setBirthday(birthday);\r\n\r\n        studentService.updateStudent(student);\r\n        return \"/views/listStudent\";\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/cn/wmyskxz/controller/StudentController.java b/src/main/java/cn/wmyskxz/controller/StudentController.java
+--- a/src/main/java/cn/wmyskxz/controller/StudentController.java	
++++ b/src/main/java/cn/wmyskxz/controller/StudentController.java	
+@@ -1,19 +1,15 @@
+ package cn.wmyskxz.controller;
+ 
+ import cn.wmyskxz.entity.Student;
+-import cn.wmyskxz.entity.User;
+ import cn.wmyskxz.service.StudentService;
+ import cn.wmyskxz.util.Page;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Controller;
+-import org.springframework.ui.Model;
+ import org.springframework.web.bind.annotation.RequestMapping;
+ import org.springframework.web.servlet.ModelAndView;
+-import sun.misc.Request;
+ 
+ import javax.servlet.http.HttpServletRequest;
+ import javax.servlet.http.HttpServletResponse;
+-import javax.sql.RowSet;
+ import java.text.ParseException;
+ import java.text.SimpleDateFormat;
+ import java.util.Date;
+@@ -30,19 +26,23 @@
+    @RequestMapping("/index")
+     public String tolistStudent(HttpServletRequest request){
+ 
+-       User user=new User();
+-
+        String  username = request.getParameter("Username");
+        String  password = request.getParameter("Password");
+-       System.out.println(username);
+-       System.out.println(password);
++
+        if (username != null && username.equals("tony")
+                     && password != null &&  password.equals("123")){
+                 return "/views/listStudent";
+             }
+ 
+-       return "null";
++       return "/views/error";
++
+     }
++
++    @RequestMapping("/indexStudent")
++    public  String toIndexStudent(HttpServletRequest request){
++       return  "/views/indexStudent";
++    }
++
+ 
+     @RequestMapping("/findStudent")
+     public  String toFindStudent(HttpServletRequest request, HttpServletResponse response){
+@@ -63,6 +63,31 @@
+     }
+ 
+ 
++    @RequestMapping("/singleList")
++    public String toSingleList(HttpServletRequest request, HttpServletResponse response) {
++        int number=Integer.parseInt(request.getParameter("idstudent"));
++        System.out.println(number);
++        // 获取分页参数
++        int start = 0;
++        int count = 10;
++
++        try {
++            start = Integer.parseInt(request.getParameter("page.start"));
++            count = Integer.parseInt(request.getParameter("page.count"));
++        } catch (Exception e) {
++        }
++
++        Page page = new Page(start, count);
++
++        List<Student> students = studentService.list(page.getStart(), page.getCount());
++        int total = studentService.getTotal();
++        page.setTotal(total);
++
++        request.setAttribute("students", students);
++        request.setAttribute("page", page);
++
++        return "/views/showresult";
++    }
+ 
+     @RequestMapping("/StudentList")
+         public String toStudentList(HttpServletRequest request, HttpServletResponse response) {
